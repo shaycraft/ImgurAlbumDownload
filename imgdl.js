@@ -11,8 +11,9 @@ var opts = {
     path: '/3/album/tX6mt',
     headers: headers
 }
+var outputDir = './download';
 
-doit(opts).then(function(data) {
+getImgurMetadata(opts).then(function(data) {
     var arr = data.data.images.map(function(obj) {
         return obj.link;
     });
@@ -25,13 +26,18 @@ doit(opts).then(function(data) {
 });
 
 function download_file(fileurl, filename) {
-    var file = fs.createWriteStream(filename);
+    var imgpath =  outputDir + '/' + filename;
+    if (!fs.existsSync(outputDir)) {
+        console.log('Creating ' + outputDir);
+        fs.mkdir(outputDir);
+    }
+    var file = fs.createWriteStream(imgpath);
     var filereq = http.get(fileurl, function(res) {
-        res.pipe(file);
+        res.pipe(file).on('finish', function() { console.log('Downloaded ' + fileurl)});
     });
 }
 
-function doit(opts) {
+function getImgurMetadata(opts) {
     var defer = q.defer();
     var bytes = [];
 

@@ -8,10 +8,17 @@ var opts = {
     hostname: 'api.imgur.com',
     protocol: 'https:',
     method: 'GET',
-    path: '/3/album/tX6mt',
     headers: headers
 }
 var outputDir = './download';
+
+if (process.argv.length != 3) {
+    console.log('Usage:  nodejs imgdl.js <albumid>');
+    process.exit(1);
+}
+
+var albumid = process.argv[2];
+opts.path = '/3/album/' + albumid;
 
 getImgurMetadata(opts).then(function(data) {
     var arr = data.data.images.map(function(obj) {
